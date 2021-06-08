@@ -1,0 +1,29 @@
+Open shell.bat, this links to the tools from android studio and steals adb from sidequest.
+
+to decompile and decode the apk run:
+	apktool d main.apk
+
+Change whatever you need to in the new folder named after the apk
+
+Repackage the files into an apk:
+	apktool b main
+
+new APK is in main\dist\main.apk
+
+align assets in APK to prepare for signing:
+	zipalign -p -f -v 4 main.apk aligned.apk
+This will make a duplicate of the apk
+
+use the JDK's keytool to generate a keystore:
+	keytool -genkey -v -keystore release.keystore -alias example -keyalg RSA -keysize 2048 -validity 10000
+The validity is how long the keystore will be valid for, 10000 is about 27 years
+
+Finally, Sign the APK:
+	apksigner sign --ks release.keystore --out thefinal.apk aligned.apk
+
+Your file will be named thefinal.apk and you can install it to a device with USB Debugging active like this:
+	adb devices
+to confirm the device is connected
+	adb install thefinal.apk
+
+And you're done
